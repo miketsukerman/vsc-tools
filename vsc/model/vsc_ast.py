@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import List, Optional, Dict, Any
-import yaml
+import yaml, dacite
 
 
 @dataclass
@@ -28,24 +28,12 @@ class Method:
     input: Optional[List[Argument]] = None
     output: Optional[List[Argument]] = None
 
-    def __post_init__(self):
-        if self.error is not None:
-            self.error = [Error(**e) if isinstance(e, dict) else e for e in self.error]
-        if self.input is not None:
-            self.input = [Argument(**a) if isinstance(a, dict) else a for a in self.input]
-        if self.output is not None:
-            self.output = [Argument(**a) if isinstance(a, dict) else a for a in self.output]
-
 
 @dataclass
 class Event:
     name: str
     description: Optional[str] = None
     input: Optional[List[Argument]] = None
-
-    def __post_init__(self):
-        if self.input is not None:
-            self.input = [Argument(**a) if isinstance(a, dict) else a for a in self.input]
 
 
 @dataclass
@@ -67,7 +55,7 @@ class Member:
 @dataclass
 class Option:
     name: str
-    value: str
+    value: int
     description: Optional[str] = None
 
 
@@ -78,10 +66,6 @@ class Enumeration:
     options: List[Option]
     description: Optional[str] = None
 
-    def __post_init__(self):
-        if self.options is not None:
-            self.options = [Option(**o) if isinstance(o, dict) else o for o in self.options]
-
 
 @dataclass
 class Struct:
@@ -90,10 +74,6 @@ class Struct:
     type: Optional[str] = None
     description: Optional[str] = None
     members: Optional[List[Member]] = None
-
-    def __post_init__(self):
-        if self.members is not None:
-            self.members = [Member(**m) if isinstance(m, dict) else m for m in self.members]
 
 
 @dataclass
@@ -130,38 +110,6 @@ class Namespace:
 
     namespaces: Optional[List['Namespace']] = None
 
-    def __post_init__(self):
-        if self.properties is not None:
-            self.properties = [Property(**p) if isinstance(p, dict) else p for p in self.properties]
-        if self.events is not None:
-            self.events = [Event(**e) if isinstance(e, dict) else e for e in self.events]
-        if self.methods is not None:
-            self.methods = [Method(**m) if isinstance(m, dict) else m for m in self.methods]
-        if self.includes is not None:
-            self.includes = [Include(**i) if isinstance(i, dict) else i for i in self.includes]
-        if self.structs is not None:
-            self.structs = [Struct(**s) if isinstance(s, dict) else s for s in self.structs]
-        if self.typedefs is not None:
-            self.typedefs = [Typedef(**t) if isinstance(t, dict) else t for t in self.typedefs]
-        if self.enumerations is not None:
-            self.enumerations = [Enumeration(**e) if isinstance(e, dict) else e for e in self.enumerations]
-        if self.namespaces is not None:
-            self.namespaces = [Namespace(**n) if isinstance(n, dict) else n for n in self.namespaces]
-
-
-def parse_dataclass_from_dict(class_name, dictionary):
-    try:
-        field_types = class_name.__annotations__
-        return class_name(
-            **{f: parse_dataclass_from_dict(field_types[f], dictionary[f]) for f in dictionary})
-    except AttributeError:
-        if isinstance(dictionary, (tuple, list)):
-            return [
-                parse_dataclass_from_dict(
-                    class_name.__args__[0],
-                    f) for f in dictionary]
-        return dictionary
-
 
 def read_yaml_file(filename) -> str:
     """
@@ -183,15 +131,6 @@ def parse_yaml_file(yaml_string: str) -> Dict[Any, Any]:
     return yaml.safe_load(yaml_string)
 
 
-def parse_ast_from_dict(ast_dict: Dict[Any, Any]) -> Namespace:
-    """
-    Tries to parse dictionary and create abstract syntax tree
-    :param ast_dict: dictionary containing AST (vehicle service catalog)
-    :return: AST
-    """
-    return parse_dataclass_from_dict(Namespace, ast_dict)
-
-
 def read_ast_from_yaml_file(filename: str) -> Namespace:
     """
     Reads a yaml file and returns AST
@@ -203,6 +142,6 @@ def read_ast_from_yaml_file(filename: str) -> Namespace:
 
     yaml_dict = parse_yaml_file(yaml_string)
 
-    ast = parse_ast_from_dict(yaml_dict)
+    ast = dacite.from_dict(data_class=Namespace, data=yaml_dict)
 
     return ast

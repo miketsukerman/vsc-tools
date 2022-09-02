@@ -1,5 +1,5 @@
-name: first
-description: first namespace description
+name: named_service
+description: This is it.
 major_version: 3
 minor_version: 0
 

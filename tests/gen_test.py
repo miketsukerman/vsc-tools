@@ -15,7 +15,7 @@ def test_x():
 
 def test_gen(tmp_path):
     # The files named 'input.yaml', 'template' and 'result' are in the tests directory
-    ast_root = vsc_parser.get_ast_from_file(os.path.join(TestPath, 'input3.yaml'))
+    ast_root = vsc_parser.get_ast_from_file(os.path.join(TestPath, 'input.yaml'))
 
     with open(os.path.join(TestPath,"template"), "r") as template_file:
         generated = vsc_generator._gen_with_text_template(ast_root, template_file.read())
@@ -31,7 +31,7 @@ def test_gen(tmp_path):
 def test_ast_gen():
     service = vsc_ast.read_ast_from_yaml_file(os.path.join(TestPath, 'input.yaml'))
 
-    assert service.name == "first"
+    assert service.name == "named_service"
     assert service.major_version == 3
     assert service.minor_version == 0
 

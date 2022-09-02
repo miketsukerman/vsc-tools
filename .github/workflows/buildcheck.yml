@@ -20,6 +20,7 @@ jobs:
           pip install pytest
           pip install anytree
           pip install jinja2
+          pip install dacite
 
       - name: Install vsc module
         run: |
