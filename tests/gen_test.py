@@ -5,9 +5,13 @@
 # ----------------------------------------------------------------------------
 # This is maybe not ideal way but seems efficient enough
 from vsc.model import vsc_ast, vsc_parser, vsc_generator
-import os, pathlib
+import os
 
 TestPath = os.path.dirname(os.path.realpath(__file__))
+
+InputPath = os.path.join(TestPath, 'input.yaml')
+TestTemplatePath = os.path.join(TestPath,"template.j2")
+ResultPath = os.path.join(TestPath,"result")
 
 def test_x():
     assert 1 == 1
@@ -15,12 +19,12 @@ def test_x():
 
 def test_gen(tmp_path):
     # The files named 'input.yaml', 'template' and 'result' are in the tests directory
-    ast_root = vsc_parser.get_ast_from_file(os.path.join(TestPath, 'input.yaml'))
+    ast_root = vsc_parser.get_ast_from_file(InputPath)
 
-    with open(os.path.join(TestPath,"template"), "r") as template_file:
-        generated = vsc_generator._gen_with_text_template(ast_root, template_file.read())
+    with open(TestTemplatePath, "r") as template_file:
+        generated = vsc_generator.gen_with_template_text(ast_root, template_file.read())
 
-    with open(os.path.join(TestPath,"result"), "r") as result_file:
+    with open(ResultPath, "r") as result_file:
         # Apparently we must strip newline or it will be added superfluously here
         # even if it is not in the file. The same does not happen on the
         # jinja-template generation we are comparing to.
@@ -29,7 +33,7 @@ def test_gen(tmp_path):
 
 
 def test_ast_gen():
-    service = vsc_ast.read_ast_from_yaml_file(os.path.join(TestPath, 'input.yaml'))
+    service = vsc_parser.read_ast_from_yaml_file(InputPath)
 
     assert service.name == "named_service"
     assert service.major_version == 3

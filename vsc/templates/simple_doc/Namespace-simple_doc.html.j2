@@ -1,0 +1,86 @@
+<html>
+   <head>
+      <title>{{item.name}}</title>
+   </head>
+   <body>
+      <h1>Namespaces: {{item.name}}</h1>
+
+      {% if item.namespaces == None %}
+      NO ADDITIONAL NAMESPACES DEFINED
+      {% else %}
+      {% for n in item.namespaces %}
+          {{ gen(n) }}
+      {% endfor %}
+      {% endif %}
+
+      <h2>Methods</h2>
+      {% if item.methods == None %}
+      NO STRUCTS DEFINED
+      {% else %}
+      {% for x in item.methods %}
+         <p>
+         {{ item.name }} :: {{ x.name }}(
+         {{ gen(x.input)|join(', ') }}
+         ) out (
+         {{ gen(x.output)|join(', ') }}
+         ) returns (
+         )
+         ) error (
+            {{ gen(x.error)|join('\n\n') }}
+            </p><p>
+      {% endfor %}
+      {% endif %}
+      <h2>Version</h2>
+      <p>
+        {% if item.major_version == None %}
+        NO VERSION DEFINED
+        {% else %}
+        {{ item.major_version }}{% if item.minor_version != None %}.{{ item.minor_version }}{% endif %}
+        {% endif %}
+      </p>
+      <h2>Structs</h2>
+      {% if item.structs == None %}
+      NO STRUCTS DEFINED
+      {% else %}
+         {% for x in item.structs %}
+            <p> STRUCT {{ item.name }} :: {{ x.name }}(
+            {{ gen(x.members)|join(',<br>\n') }}
+            )
+            </p><p></p>
+         {% endfor %}
+      {% endif %}   
+      <h2>Typedefs</h2>
+      {% if item.typedefs == None %}
+      NO TYPEDEFS DEFINED
+      {% else %}
+      {% for x in item.typedefs %}
+         TYPEDEF {{ item.name }} :: {{ x.name }}.
+         min: {{ x.min }}
+         max: {{ x.max}}
+      </p><p>
+      {% endfor %}
+      {% endif %}
+      <h2>Events</h2>
+      {% if item.events == None %}
+      NO EVENTS DEFINED
+      {% else %}
+      {% for x in item.events %}
+         EVENT {{ item.name }} :: {{ x.name }} (
+         {{ gen(x.input)|join(', ') }}
+         )
+      </p><p>
+      {% endfor %}
+      {% endif %}
+      {# If you need to check if a certain item type is not defined
+      (optional), test like this: #}
+      {% if item.properties == None %}
+      NO PROPERTIES DEFINED
+      {% else %}
+         {% for x in item.properties %}
+            PROPERTY {{ item.name }} :: {{ x.name }}.
+            </p><p>
+         {% endfor %}
+      {% endif %}
+   <b></b>
+</body>
+</html>

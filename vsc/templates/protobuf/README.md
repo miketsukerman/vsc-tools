@@ -29,12 +29,11 @@ Known limitations of the current implementation:
 
 ## Using the Protobuf Generator
 
-
 ### Preparations
 
-No additional installations needed to run the generator, but to validate output a protobuf compiler is needed. 
+No additional installations needed to run the generator, but to validate output a protobuf compiler is needed.
 
-```
+```bash
 apt install -y protobuf-compiler
 ```
 
@@ -42,7 +41,7 @@ apt install -y protobuf-compiler
 
 The code below runs the prototype protobuf generator and verifies that the generated code is syntactically correct.
 
-```
+```bash
 # go to vsc-tools if not already there
 cd vsc-tools
 # make sure that vsc has been cloned
@@ -55,8 +54,7 @@ python model/vsc_generator.py vehicle_service_catalog/comfort-service.yml protob
 
 Generated Protobuf files can be validated/compiled using `protoc`.
 
-```
+```bash
 mkdir tmp
 protoc --cpp_out=tmp vsc.proto
 ```
-

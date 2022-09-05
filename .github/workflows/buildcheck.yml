@@ -31,7 +31,9 @@ jobs:
           cd tests
           pytest -v
 
-      - name: Run example tool on latest VSC
+      - name: Run vscgen tool on latest Vehicle Service Catalog
         run: |
           git clone https://github.com/GENIVI/vehicle_service_catalog/
-          vscgen vehicle_service_catalog/comfort-service.yml simple_overview.tpl
+          vscgen vehicle_service_catalog/comfort-service.yml simple_overview.tpl.j2
+          vscgen vehicle_service_catalog/comfort-service.yml protobuf.tpl.j2
+          vscgen vehicle_service_catalog/comfort-service.yml
